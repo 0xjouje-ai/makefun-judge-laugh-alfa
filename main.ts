@@ -12,11 +12,15 @@ const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 
 // The gate only accepts UTF-8 text of 1 to 200 characters, not only
 // whitespace, on a single line: refuse to write anything that would fail it.
+// A carriage return would break the single line just as a newline does, so
+// reject both — a \r alone is invisible in most editors but still splits
+// the line for a strict single-line reader.
 if (
   LINE.length < 1 ||
   LINE.length > 200 ||
   LINE.trim() === "" ||
-  LINE.includes("\n")
+  LINE.includes("\n") ||
+  LINE.includes("\r")
 ) {
   throw new Error(`entry line fails the gate: ${LINE.length} characters`);
 }
